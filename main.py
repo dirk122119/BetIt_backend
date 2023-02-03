@@ -1,14 +1,23 @@
 from fastapi import FastAPI,Request
 import uvicorn
-from routers import crypto
+from routers import crypto,upload
 from page import home
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(crypto.router)
+app.include_router(upload.router)
 app.include_router(home.router)
 templates = Jinja2Templates(directory="templates/")
 
