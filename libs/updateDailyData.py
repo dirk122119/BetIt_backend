@@ -29,10 +29,9 @@ def getAndInsert_TwSymbol_daily(region,cnx):
     sql=f"select distinct symbol from {SymbolTable};"
     cursor.execute(sql)
     symbols=cursor.fetchall()
+    logger.info(symbols)
     for symbol in symbols:
         symbol=symbol[0]
-        connect_objt=cnx.get_connection()
-        cursor = connect_objt.cursor(buffered=True)
 
         sql=f"select id from {SymbolTable} where symbol = %s;"
         val=(symbol,)
@@ -71,15 +70,13 @@ def getAndInsert_TwSymbol_daily(region,cnx):
                         cursor.execute(sql,val)
                         connect_objt.commit()
                     logger.info(f"{symbol} update finish")
-                time.sleep(10)
+                time.sleep(3)
                 break
             except Exception as e:
                 logger.error(f"{symbol} error {index} time,{e}")
                 logger.info("sleep 30s")
                 time.sleep(30)
                 logger.info("wake up ")
-        cursor.close()
-        connect_objt.close()
     cursor.close()
     connect_objt.close()
                
@@ -119,19 +116,6 @@ def get_TwSymbol_data(symbol,cnx):
         logger.info(f"updating {symbol}")
         logger.info(data.head())
         logger.info(data.iloc[0]["Trading_Volume"])
-        # for i in range (0,data.shape[0]):
-        #     sql="INSERT INTO TwStockTable (symbol,date,open,high,low,close,volume) VALUES(%s,%s,%s,%s,%s,%s,%s)"
-        #     val=(
-        #         symbolId,
-        #         data.iloc[i]["date"],
-        #         data.iloc[i]["open"].item(),
-        #         data.iloc[i]["max"].item(),
-        #         data.iloc[i]["min"].item(),
-        #         data.iloc[i]["close"].item(),
-        #         data.iloc[i]["Trading_Volume"].item()
-        #         )
-        #     cursor.execute(sql,val)
-        #     connect_objt.commit()
         logger.info(f"{symbol} update finish")
     cursor.close()
     connect_objt.close()
@@ -140,13 +124,14 @@ def daterange(start_date, end_date):
     for n in range(int((end_date - start_date).days)):
         yield start_date + datetime.timedelta(n)
 
-load_dotenv()
+
 if __name__ == '__main__':
+    load_dotenv()
     try:
         cnx=create_connection_pool()
     except:
         print("無法建立connect pool")
 
     est = pytz.timezone('EST')
-    # getAndInsert_TwSymbol_daily("TW",cnx)
-    getAndInsert_TwSymbol_daily("US",cnx)
+    getAndInsert_TwSymbol_daily("TW",cnx)
+    # getAndInsert_TwSymbol_daily("US",cnx)
