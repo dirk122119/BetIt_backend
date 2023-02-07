@@ -1,5 +1,5 @@
 from fastapi import APIRouter,HTTPException,UploadFile,status,File
-import magic
+# import magic
 from uuid import uuid4
 import boto3
 from loguru import logger
@@ -23,18 +23,18 @@ async def upload_s3(content:bytes,key:str):
 
 router=APIRouter()
 
-@router.post("/upload", tags=["Phase3 backend"])
-async def upload(file:UploadFile|None=None):
-    if not file:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="no file")
-    content = await file.read()
-    file_type = magic.from_buffer(buffer=content,mime=True)
-    if(file_type not in mime_file_type):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=f"file type {file_type} noot support, only support {mime_file_type}")
-    print(f"{uuid4()}.{mime_file_type[file_type]}")
-    await upload_s3(content=content,key=f"{uuid4()}.{mime_file_type[file_type]}")
+# # @router.post("/upload", tags=["Phase3 backend"])
+# async def upload(file:UploadFile|None=None):
+#     if not file:
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="no file")
+#     content = await file.read()
+#     file_type = magic.from_buffer(buffer=content,mime=True)
+#     if(file_type not in mime_file_type):
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=f"file type {file_type} noot support, only support {mime_file_type}")
+#     print(f"{uuid4()}.{mime_file_type[file_type]}")
+#     await upload_s3(content=content,key=f"{uuid4()}.{mime_file_type[file_type]}")
 
-    return {"crypto index"}
+#      return {"crypto index"}
 
 
 @router.post("/upload_from_html", tags=["Phase3 backend"])
